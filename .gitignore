@@ -1,0 +1,13 @@
+.netrwhist
+*.DS_Store
+*.LSOverride
+Thumbs.db
+*.swp
+_aria2/dht.dat
+*.log
+.vscode
+.zcompdump
+zcompdump
+.zsh_history
+.zsh_sessions
+**/iterm_integration.sh-*
