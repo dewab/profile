@@ -150,9 +150,8 @@ zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower
 append_path PATH /sbin
 append_path PATH /usr/sbin
 append_path PATH ${HOME}/bin
-append_path PATH ${HOME}/.custom/${platform}/bin
-append_path PATH ${HOME}/.custom/${platform}/sbin
 append_path PATH ${HOME}/.local/bin
+append_path PATH ${HOME}/.local/sbin
 append_path PATH /usr/X11R6/bin
 append_path PATH /usr/local/bin
 append_path PATH /usr/local/sbin
@@ -162,8 +161,6 @@ append_path PATH /opt/homebrew/bin
 append_path PATH /snap/bin
 append_path MANPATH /usr/man
 append_path MANPATH ${HOME}/man
-append_path MANPATH ${HOME}/.custom/${platform}/man
-append_path MANPATH ${HOME}/.custom/${platform}/share/man
 append_path MANPATH ${HOME}/.local/man
 append_path MANPATH /usr/share/man
 append_path MANPATH /usr/local/man
