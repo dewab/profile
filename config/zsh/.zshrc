@@ -1,9 +1,6 @@
 # Turn on prompt performance checking if enabled
 [ -z "$ZPROF" ] || zmodload zsh/zprof
 
-# Fig pre block. Keep at the top of this file.
-[[ -f "$HOME/.fig/shell/zshrc.pre.zsh" ]] && . "$HOME/.fig/shell/zshrc.pre.zsh"
-
 # Daniel's .zshrc
 #
 # Directories:
@@ -85,15 +82,23 @@ zmodload zsh/datetime
 
 # Function to check and rebuild completion database if necessary
 function check_and_rebuild_compdb() {
-    local db_timestamp
+    local db_timestamp db_day FLAGS current_day
 
-    if [ "$platform" = "darwin" ]; then
-        db_timestamp=$(command stat -f '%Dm' "${ZSH_COMPDUMP}")
-    else
-        db_timestamp=$(command stat "${ZSH_COMPDUMP}" -c %Y)
-    fi
+    case $platform in
+        darwin)
+            FLAGS="-f %Dm"
+            ;;
+        *)
+            FLAGS="-c %Y"
+            ;;
+    esac
 
-    if [ "$(strftime "%j" "${EPOCHSECONDS}")" != "$(strftime "%j" "${db_timestamp}")" ]; then
+    db_timestamp=$(command stat "${FLAGS}" "${ZSH_COMPDUMP}")
+    db_day=$(strftime "%j" "${db_timestamp}")
+    current_day=$(strftime "%j" "${EPOCHSECONDS}")
+
+    # if [ "$(strftime "%j" "${EPOCHSECONDS}")" != "$(strftime "%j" "${db_timestamp}")" ]; then
+    if [ "${current_day}" != "${db_day}" ]; then
         compinit -d "${ZSH_COMPDUMP}" && touch "${ZSH_COMPDUMP}"
     else
         compinit -C -d "${ZSH_COMPDUMP}"
@@ -227,8 +232,5 @@ bindkey '^Xe' edit-command-line
 # Create socket directory for SSH ControlPath
 # [ -d ~/.ssh/cm_socket ] || mkdir -m 0700 -p ~/.ssh/cm_socket
 is-directory ~/.ssh/cm_socket || mkdir -m 0700 -p ~/.ssh/cm_socket
-
-# Fig post block. Keep at the bottom of this file.
-[[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && . "$HOME/.fig/shell/zshrc.post.zsh"
 
 [ -z "$ZPROF" ] || zprof
