@@ -1,7 +1,5 @@
 is-executable atuin || return
 
-alias ssh="atuin wrapper ssh --"
-
 # source <(atuin gen-completions --shell zsh)
 # compdef _atuin atuin
 
