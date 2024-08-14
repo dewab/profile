@@ -1,6 +1,6 @@
 is-executable step || return
 
-if [[ -f "${ZSH_CACHE_DIR}/completions/_step" ]]; then
+if [[ ! -f "${ZSH_CACHE_DIR}/completions/_step" ]]; then
   # source <(cat "${ZSH_CACHE_DIR}/completions/_step")
   autoload -Uz _step
   typeset -g -A _comps

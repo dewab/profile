@@ -1,6 +1,6 @@
 is-executable helm || return
 
-if [[ -f "${ZSH_CACHE_DIR}/completions/_helm" ]]; then
+if [[ ! -f "${ZSH_CACHE_DIR}/completions/_helm" ]]; then
   autoload -Uz _helm
   typeset -g -A _comps
   _comps[helm]=_helm

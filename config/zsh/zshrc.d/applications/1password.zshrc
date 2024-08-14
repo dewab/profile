@@ -2,7 +2,7 @@ is-executable op || return
 
 # source <(op completion zsh)
 
-if [[ -f "${ZSH_CACHE_DIR}/completions/_op" ]]; then
+if [[ ! -f "${ZSH_CACHE_DIR}/completions/_op" ]]; then
   autoload -Uz _op
   typeset -g -A _comps
   _comps[op]=_op
