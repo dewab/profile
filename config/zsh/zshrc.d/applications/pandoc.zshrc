@@ -5,5 +5,5 @@ if [[ ! -f "${ZSH_CACHE_DIR}/completions/_pandoc" ]]; then
   typeset -g -A _comps
   _comps[pandoc]=_pandoc
 fi
-  
+
 pandoc --bash-completion >| "${ZSH_CACHE_DIR}/completions/_pandoc" &|
