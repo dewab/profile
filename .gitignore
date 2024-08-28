@@ -11,3 +11,4 @@ zcompdump
 .zsh_history
 .zsh_sessions
 **/iterm_integration.sh-*
+**/__pycache__
