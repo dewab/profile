@@ -6,6 +6,17 @@ import shutil
 import json
 
 def create_directory(target_path, mode, debug=False):
+    """
+    Creates a directory at the specified target path with the given mode (permissions).
+
+    Args:
+        target_path (str): The path where the directory should be created.
+        mode (str): The permissions mode (e.g., "0700") for the new directory.
+        debug (bool, optional): If True, print debug information. Defaults to False.
+
+    Raises:
+        Exception: If the directory creation fails.
+    """
     try:
         if debug:
             print(f"Creating directory: {target_path}")
@@ -18,6 +29,18 @@ def create_directory(target_path, mode, debug=False):
         print(f"Failed to create directory {target_path}: {e}")
 
 def create_link(source_path, target_path, force, debug=False):
+    """
+    Creates a symbolic link from source_path to target_path. If force is True and the target exists, it will be removed.
+
+    Args:
+        source_path (str): The source file or directory to link.
+        target_path (str): The path where the symbolic link should be created.
+        force (bool): If True, overwrite the existing symbolic link or file.
+        debug (bool, optional): If True, print debug information. Defaults to False.
+
+    Raises:
+        Exception: If the symbolic link creation fails.
+    """
     try:
         if debug:
             print(f"Creating symlink: {source_path} -> {target_path}")
@@ -34,6 +57,18 @@ def create_link(source_path, target_path, force, debug=False):
         print(f"Failed to create symlink {target_path}: {e}")
 
 def create_copy(source_path, target_path, force, debug=False):
+    """
+    Copies a file from source_path to target_path. If force is True and the target exists, it will be renamed.
+
+    Args:
+        source_path (str): The source file to be copied.
+        target_path (str): The path where the file should be copied.
+        force (bool): If True, rename the existing file before copying.
+        debug (bool, optional): If True, print debug information. Defaults to False.
+
+    Raises:
+        Exception: If the file copy fails.
+    """
     try:
         if debug:
             print(f"Copying file: {source_path} -> {target_path}")
@@ -49,11 +84,21 @@ def create_copy(source_path, target_path, force, debug=False):
         print(f"Failed to copy file from {source_path} to {target_path}: {e}")
 
 def process_files(files, force=False, override_home=None, debug=False):
+    """
+    Processes a list of file operations (create directory, create link, copy file) based on the provided manifest.
+
+    Args:
+        files (list): A list of file operation dictionaries, each containing the keys 'type', 'source', 'target', and 'mode'.
+        force (bool, optional): If True, forces overwrite of existing files. Defaults to False.
+        override_home (str, optional): If provided, overrides the home directory for the target paths. Defaults to None.
+        debug (bool, optional): If True, print debug information. Defaults to False.
+    """
+    base_home = override_home if override_home else os.path.expanduser("~")
+
     for file in files:
-        if override_home:
-            target_path = os.path.join(override_home, file["target"])
-        else:
-            target_path = os.path.expanduser(file["target"])
+        # Construct the target path using the base home directory
+        target_path = os.path.join(base_home, file["target"])
+
         if file["type"] == "directory":
             create_directory(target_path, file.get("mode", "0700"), debug=debug)
         elif file["type"] == "link":
@@ -64,6 +109,22 @@ def process_files(files, force=False, override_home=None, debug=False):
             print(f"Unknown file type: {file['type']}")
 
 def main():
+    """
+    Main function that handles argument parsing and initiates file processing.
+
+    Command-line Arguments:
+        -f/--file: Path to the manifest file (default: 'manifest.json').
+        -F/--force: Force overwrite of existing files.
+        -O/--override-home: Override the user's home directory with a different path.
+        -d/--debug: Enable debug mode for verbose output.
+
+    The manifest file should be a JSON file containing a "files" key with a list of file operations.
+    Each file operation should include:
+        - "type": The type of operation ("directory", "link", "copy").
+        - "source": The source path (for "link" and "copy" operations).
+        - "target": The target path where the file or directory should be created.
+        - "mode": (Optional) The permissions mode for directories (default: "0700").
+    """
     parser = argparse.ArgumentParser(description="Process files according to a manifest JSON file.")
     parser.add_argument("-f", "--file", help="Path to the manifest file (JSON)", default="manifest.json")
     parser.add_argument("-F", "--force", action="store_true", help="Force overwrite existing files")
