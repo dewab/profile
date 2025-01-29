@@ -26,3 +26,7 @@ function is-directory () {
 function is-readable () {
 	[[ -r "$1" ]] || return 1
 }
+
+function is-wsl () {
+	grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null || return 1
+}

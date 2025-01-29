@@ -15,7 +15,9 @@ setopt PROMPT_SUBST
 # Enable VCS information (GIT, SVN)
 # autoload -Uz vcs_info
 autoload -Uz add-zsh-hook vcs_info
-VCS_BRANCH_CHAR=$'\ue0a0'
+
+is-wsl || VCS_BRANCH_CHAR=$'\ue0a0'
+
 zstyle ':vcs_info:*' enable git svn
 zstyle ':vcs_info:*' get-revision true
 zstyle ':vcs_info:*' check-for-changes true
