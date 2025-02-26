@@ -58,7 +58,8 @@ export FIGNORE="" # files and directories to ignore with tab-completion
 # hist_reduce_blanks	# trim blanks
 # nonomatch				# match BASH glob behavior.  Pass wildcard to command if unmatched (as in scp blah:* .)
 # prompt_subst			# allow prompt expansion of vars
-setopt auto_cd correct append_history complete_aliases extended_history hist_ignore_dups hist_reduce_blanks nonomatch prompt_subst
+# setopt auto_cd correct append_history complete_aliases extended_history hist_ignore_dups hist_reduce_blanks nonomatch prompt_subst
+setopt auto_cd correct append_history extended_history hist_ignore_dups hist_reduce_blanks nonomatch prompt_subst
 
 # Change paths to only store unique entries
 typeset -aU path fpath manpath cdpath
@@ -105,7 +106,7 @@ function check_and_rebuild_compdb() {
     fi
 }
 
-check_and_rebuild_compdb
+# check_and_rebuild_compdb
 
 # Enable bash completion support
 autoload -U +X bashcompinit && bashcompinit
@@ -214,6 +215,9 @@ for application in ${ZDOTDIR}/zshrc.d/applications/*.zshrc ; do
 	source "${application}"
 done
 unset application
+
+check_and_rebuild_compdb
+compinit
 
 # Set the EDITOR variable
 is-executable vim && export EDITOR=$(command -v vim)
