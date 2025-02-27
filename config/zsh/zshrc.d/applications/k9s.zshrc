@@ -7,5 +7,3 @@ if [[ ! -f "${ZSH_CACHE_DIR}/completions/_k9s" ]]; then
 fi
 
 k9s completion zsh >| "${ZSH_CACHE_DIR}/completions/_k9s" &|
-
-compdef k=k9s

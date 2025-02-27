@@ -1,9 +1,7 @@
 is-executable assh || return
 
-alias ssh="assh wrapper ssh --"
-
-# source <(assh completion zsh)
-# compdef _assh assh
+# I don't think I really need this, but it's here for reference
+# alias ssh="assh wrapper ssh --"
 
 if [[ ! -f "${ZSH_CACHE_DIR}/completions/_assh" ]]; then
   autoload -Uz _assh

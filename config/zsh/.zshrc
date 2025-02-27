@@ -106,7 +106,7 @@ function check_and_rebuild_compdb() {
     fi
 }
 
-# check_and_rebuild_compdb
+check_and_rebuild_compdb
 
 # Enable bash completion support
 autoload -U +X bashcompinit && bashcompinit
@@ -135,7 +135,7 @@ zstyle ':completion:*:descriptions' format %B%d%b
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;34=0=01'
 
 # Have completion ignore case
-zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+# zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 
 # Highlight the current autocomplete option
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
