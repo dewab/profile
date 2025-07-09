@@ -16,7 +16,7 @@ function ftp-server() {
 
     [[ -z "$flag_help" ]] || { print -l $usage && return }
 
-    DOCKER_CONTEXT=desktop-linux \
+    # DOCKER_CONTEXT=desktop-linux \
     docker run -it --rm \
         --publish 20-21:20-21/tcp \
         --publish 30000-30009:30000-30009/tcp \

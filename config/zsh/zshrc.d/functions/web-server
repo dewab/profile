@@ -22,5 +22,9 @@ function web-server() {
 
     [[ -z "$flag_help" ]] || { print -l $usage && return }
 
-    DOCKER_CONTEXT=desktop-linux docker run -it --rm -p "$arg_shareport[-1]:80" -v "$arg_sharedir[-1]":/usr/share/nginx/html nginx
+    # DOCKER_CONTEXT=desktop-linux \
+    docker run -it --rm \
+    -p "$arg_shareport[-1]:80" \
+    -v "$arg_sharedir[-1]":/usr/share/nginx/html \
+    nginx
 }
