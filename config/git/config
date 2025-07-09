@@ -58,3 +58,5 @@
 	postBuffer = 524288000
 [push]
 	autoSetupRemote = true
+[init]
+	defaultBranch = main

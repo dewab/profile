@@ -1,0 +1,4 @@
+is-readable "${XDG_DATA_HOME}/zsh/plugins/powerlevel10k/powerlevel10k.zsh-theme" || return
+
+is-readable "${XDG_CONFIG_HOME}/zsh/.p10k.zsh" && source "${XDG_CONFIG_HOME}/zsh/.p10k.zsh"
+source "${XDG_DATA_HOME}/zsh/plugins/powerlevel10k/powerlevel10k.zsh-theme"

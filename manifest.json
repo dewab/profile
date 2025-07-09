@@ -1,14 +1,19 @@
 {
+  "directories": [
+    {
+      "target": "${XDG_DATA_HOME}/zsh/plugins",
+      "mode": "0700"
+    },
+    {
+      "target": "${XDG_CONFIG_HOME}",
+      "mode": "0700"
+    }
+  ],
   "files": [
     {
       "source": "config/wgetrc",
-      "target": ".config/wgetrc",
-      "type": "link"
-    },
-    {
-      "target": ".config",
-      "type": "directory",
-      "mode": "0700"
+      "target": "${XDG_CONFIG_HOME}/wgetrc",
+      "type": "copy"
     },
     {
       "source": "config/zsh/.zshenv",
@@ -17,28 +22,39 @@
     },
     {
       "source": "config/zsh",
-      "target": ".config/zsh",
+      "target": "${XDG_CONFIG_HOME}/zsh",
       "type": "link"
     },
     {
       "source": "config/git",
-      "target": ".config/git",
+      "target": "${XDG_CONFIG_HOME}/git",
       "type": "link"
     },
     {
       "source": "config/vim",
-      "target": ".config/vim",
+      "target": "${XDG_CONFIG_HOME}/vim",
       "type": "link"
     },
     {
       "source": "config/aria2",
-      "target": ".config/aria2",
+      "target": "${XDG_CONFIG_HOME}/aria2",
       "type": "link"
     },
     {
       "source": "config/yamllint",
-      "target": ".config/yamllint",
+      "target": "${XDG_CONFIG_HOME}/yamllint",
       "type": "link"
+    }
+  ],
+  "gitrepos": [
+    {
+      "source": "https://github.com/Aloxaf/fzf-tab.git",
+      "target": "${XDG_DATA_HOME}/zsh/plugins/fzf-tab"
+    },
+    {
+      "source": "https://github.com/romkatv/powerlevel10k.git",
+      "target": "${XDG_DATA_HOME}/zsh/plugins/powerlevel10k",
+      "depth": 1
     }
   ]
 }

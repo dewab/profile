@@ -1,0 +1,3 @@
+is-executable starship || return
+
+eval "$(starship init zsh)"
