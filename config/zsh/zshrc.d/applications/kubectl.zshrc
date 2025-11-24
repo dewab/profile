@@ -1,6 +1,7 @@
 is-executable kubectl || return
 
 alias k=kubectl
+alias ku='kubectl config use-context'
 
 if [[ ! -f "${ZSH_CACHE_DIR}/completions/_kubectl" ]]; then
   typeset -g -A _comps
