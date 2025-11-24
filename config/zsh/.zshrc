@@ -1,12 +1,14 @@
+# Turn on prompt performance checking if enabled
+[ -z "$ZPROF" ] || zmodload zsh/zprof
+
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.config/zsh/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
-
-# Turn on prompt performance checking if enabled
-[ -z "$ZPROF" ] || zmodload zsh/zprof
 
 # prompt_tool=starship
 prompt_tool=p10k
@@ -92,28 +94,43 @@ autoload -Uz compinit # && compinit -C -d "${XDG_CACHE_HOME}/zsh/zcompdump-${ZSH
 zmodload zsh/datetime
 
 # Function to check and rebuild completion database if necessary
-function check_and_rebuild_compdb() {
-    local db_timestamp db_day FLAGS current_day
+# Original daily rebuild logic:
+# function check_and_rebuild_compdb() {
+#     local db_timestamp db_day FLAGS current_day
+# 
+#     case $platform in
+#         darwin)
+#             FLAGS="-f %Dm"
+#             ;;
+#         *)
+#             FLAGS="-c %Y"
+#             ;;
+#     esac
+# 
+#     db_timestamp=$(command stat "${FLAGS}" "${ZSH_COMPDUMP}")
+#     db_day=$(strftime "%j" "${db_timestamp}")
+#     current_day=$(strftime "%j" "${EPOCHSECONDS}")
+# 
+#     # if [ "$(strftime "%j" "${EPOCHSECONDS}")" != "$(strftime "%j" "${db_timestamp}")" ]; then
+#     if [ "${current_day}" != "${db_day}" ]; then
+#         compinit -d "${ZSH_COMPDUMP}" && touch "${ZSH_COMPDUMP}"
+#     else
+#         compinit -C -d "${ZSH_COMPDUMP}"
+#     fi
+# }
 
-    case $platform in
-        darwin)
-            FLAGS="-f %Dm"
-            ;;
-        *)
-            FLAGS="-c %Y"
-            ;;
-    esac
+check_and_rebuild_compdb() {
+    # Prevent multiple compinit runs in the same shell
+    typeset -g __compinit_ran
+    [[ -n "${__compinit_ran}" ]] && return 0
 
-    db_timestamp=$(command stat "${FLAGS}" "${ZSH_COMPDUMP}")
-    db_day=$(strftime "%j" "${db_timestamp}")
-    current_day=$(strftime "%j" "${EPOCHSECONDS}")
-
-    # if [ "$(strftime "%j" "${EPOCHSECONDS}")" != "$(strftime "%j" "${db_timestamp}")" ]; then
-    if [ "${current_day}" != "${db_day}" ]; then
-        compinit -d "${ZSH_COMPDUMP}" && touch "${ZSH_COMPDUMP}"
+    if [[ ! -s "${ZSH_COMPDUMP}" ]]; then
+        compinit -d "${ZSH_COMPDUMP}"
     else
         compinit -C -d "${ZSH_COMPDUMP}"
     fi
+
+    __compinit_ran=1
 }
 
 check_and_rebuild_compdb
@@ -125,12 +142,12 @@ autoload -U +X bashcompinit && bashcompinit
 # autoload -Uz action && action
 autoload -Uz paths && paths
 autoload -Uz nix-host
-autoload -Uz grepp
 autoload -Uz is && is
 autoload -Uz convert_seconds
 autoload -Uz convert_seconds_human_readable
 autoload -Uz rules && rules
 autoload -Uz lsz
+autoload -Uz tg
 
 # Enable completion list menu
 zstyle ':completion:*' menu select
@@ -215,11 +232,6 @@ if [ -r "${ZDOTDIR}/zshrc.d/platform/${platform}.zshrc" ] ; then
 	source "${ZDOTDIR}/zshrc.d/platform/${platform}.zshrc"
 fi
 
-# Run host specific zshrc scripts from $HOME/.zshrc.d/hosts/
-if [ -r "${ZDOTDIR}/zshrc.d/hosts/${hostname}.zshrc" ] ; then
-	source "${ZDOTDIR}/zshrc.d/hosts/${hostname}.zshrc"
-fi
-
 # Run all application specific zshrc scripts from $HOME/.zshrc.d/applications/ (ex: veritas)
 for application in ${ZDOTDIR}/zshrc.d/applications/*.zshrc ; do
 	source "${application}"
@@ -227,7 +239,7 @@ done
 unset application
 
 check_and_rebuild_compdb
-compinit
+# compinit is already run in check_and_rebuild_compdb
 
 # Set the EDITOR variable
 is-executable vim && export EDITOR=$(command -v vim)
@@ -248,18 +260,3 @@ bindkey '^Xe' edit-command-line
 is-directory ~/.ssh/cm_socket || mkdir -m 0700 -p ~/.ssh/cm_socket
 
 [ -z "$ZPROF" ] || zprof
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/Users/daniel/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/Users/daniel/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/Users/daniel/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/Users/daniel/miniconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<

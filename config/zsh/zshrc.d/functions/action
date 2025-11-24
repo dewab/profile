@@ -3,17 +3,22 @@
 if [[ $- =~ i ]] ; then
 	RES_COL=60
 else
-	RES_COL=$(expr $(tput cols) - 10)
+	RES_COL=$(( ${COLUMNS:-$(tput cols 2>/dev/null || echo 80)} - 10 ))
 fi
 MOVE_TO_COL="\\033[${RES_COL}G"
 
 action() {
 	local STRING rc
 
+	if (( $# < 2 )); then
+		echo "Usage: action <label> <command...>" >&2
+		return 1
+	fi
+
 	STRING=$1
 	print -n "$STRING "
 	shift
-	eval "$@" && success $"$STRING" || failure $"$STRING"
+	"$@" && success "$STRING" || failure "$STRING"
 	rc=$?
 	return $rc
 }
@@ -21,13 +26,11 @@ action() {
 success() {
 	print -n ${MOVE_TO_COL}
 	print "[$fg_no_bold[green] \xE2\x9C\x94 $reset_color]" # Checkmark
-	# print "[$fg[green]  OK  $reset_color]"
 	return 0
 }
 
 failure() {
 	print -n ${MOVE_TO_COL}
 	print "[$fg_no_bold[red] \xE2\x9D\x8C $reset_color]" # X
-	# print "[$fg[red]FAILED$reset_color]"
 	return 0
 }

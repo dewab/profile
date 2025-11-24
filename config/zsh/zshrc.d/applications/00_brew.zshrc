@@ -22,8 +22,12 @@ fi
 
 unset BREW_LOCATION
 
-# Add brew completions to shell
-append_path FPATH $(brew --prefix)/share/zsh/site-functions
+# Add brew completions to shell (avoid extra brew --prefix when HOMEBREW_PREFIX is set)
+if (( $+commands[brew] )); then
+  local _brew_prefix="${HOMEBREW_PREFIX:-$(brew --prefix)}"
+  append_path FPATH "${_brew_prefix}/share/zsh/site-functions"
+  unset _brew_prefix
+fi
 
 function brew-up () {
 	brew update

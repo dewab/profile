@@ -1,30 +1,37 @@
 # ls archives (inspired by `extract`)
 lsz() {
-    if [ $# -ne 1 ]; then
-        echo "Usage: lsz filename.[tar,tgz,tar.gz,zip,rar,7z,etc]"
+    # list contents of archives without extracting
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: lsz <archive.[tar|tar.gz|tgz|zip|rar|7z|…]>" >&2
         return 1
     fi
 
-    if [ ! -f "$1" ]; then
-        echo "'$1' is not a valid file"
+    local file=$1
+    if [[ ! -r $file || ! -f $file ]]; then
+        echo "'$file' is not a readable file" >&2
         return 1
     fi
 
-    case "$1" in
-        *.tar.bz2|*.tar.gz|*.tar|*.tbz2|*.tgz)
-            tar tvf "$1"
+    case $file in
+        (*.tar|*.tar.bz2|*.tar.gz|*.tbz2|*.tgz)
+            command -v tar >/dev/null || { echo "tar not found" >&2; return 1; }
+            tar tvf "$file"
             ;;
-        *.zip|*.cbz)
-            unzip -l "$1"
+        (*.zip|*.cbz)
+            command -v unzip >/dev/null || { echo "unzip not found" >&2; return 1; }
+            unzip -l -- "$file"
             ;;
-        *.rar|*.cbr)
-            unrar l "$1"
+        (*.rar|*.cbr)
+            command -v unrar >/dev/null || { echo "unrar not found" >&2; return 1; }
+            unrar l -- "$file"
             ;;
-        *.7z)
-            7z l "$1"
+        (*.7z)
+            command -v 7z >/dev/null || { echo "7z not found" >&2; return 1; }
+            7z l -- "$file"
             ;;
-        *)
-            echo "'$1' unrecognized."
+        (*)
+            echo "'$file' unrecognized archive type" >&2
+            return 1
             ;;
     esac
 }

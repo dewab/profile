@@ -1,4 +1,8 @@
 function f() {
 	# Open current or specified folder in Finder
-	open -a "Finder" "${1-.}";
+	if [[ "${OSTYPE}" != darwin* ]] || ! command -v open >/dev/null 2>&1; then
+		echo "f is macOS-only (needs 'open' and Finder)" >&2
+		return 1
+	fi
+	open -a "Finder" "${1:-.}"
 }

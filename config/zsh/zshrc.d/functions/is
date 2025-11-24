@@ -1,32 +1,38 @@
 function is-executable () {
-	[[ $+commands[$1] -gt 0 ]] || return 1
+	[[ -n $1 ]] || return 1
+	command -v -- "$1" >/dev/null 2>&1
 }
 
 function is-supported () {
 	# see if a command supports a command line option
-	if [ $# -eq 1 ]; then
-		if eval "$1" > /dev/null 2>&1; then
-			return 0
-		else
-			return 1
-		fi
+	if (( $# == 0 )); then
+		echo "Usage: is-supported <command ...> [true-str false-str]" >&2
+		return 1
+	fi
+
+	local exit_ok=0
+	if (( $# == 1 )); then
+		"$1" >/dev/null 2>&1 || exit_ok=$?
+		return $exit_ok
+	fi
+
+	local true_msg=$2 false_msg=$3
+	if "$1" >/dev/null 2>&1; then
+		echo -n "$true_msg"
 	else
-		if eval "$1" > /dev/null 2>&1; then
-			echo -n "$2"
-		else
-			echo -n "$3"
-		fi
+		echo -n "$false_msg"
 	fi
 }
 
 function is-directory () {
-	[[ -d "$1" ]] || return 1
+	[[ -n $1 && -d $1 ]] || return 1
 }
 
 function is-readable () {
-	[[ -r "$1" ]] || return 1
+	[[ -n $1 && -r $1 ]] || return 1
 }
 
 function is-wsl () {
-	grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null || return 1
+	[[ $OSTYPE == linux* ]] || return 1
+	grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null
 }

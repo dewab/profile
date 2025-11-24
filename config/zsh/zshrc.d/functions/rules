@@ -2,7 +2,9 @@
 
 ## Print a horizontal rule
 rule () {
-      printf -v _hr "%*s" $(tput cols) && echo ${_hr// /${1--}}
+      local cols=${COLUMNS:-$(tput cols 2>/dev/null || echo 80)}
+      printf -v _hr "%*s" "${cols}" ''
+      echo "${_hr// /${1--}}"
 }
 
 ## Print horizontal ruler with message
@@ -11,8 +13,11 @@ rulem ()  {
           echo "Usage: rulem MESSAGE [RULE_CHARACTER]"
               return 1
       fi
+      local cols=${COLUMNS:-$(tput cols 2>/dev/null || echo 80)}
+      printf -v _hr "%*s" "${cols}" ''
       # Fill line with ruler character ($2, default "-"), reset cursor, move 2 cols right, print message
-      printf -v _hr "%*s" $(tput cols) && echo -en ${_hr// /${2--}} && echo -e "\r\033[2C$1"
+      echo -en "${_hr// /${2--}}"
+      echo -e "\r\033[2C$1"
 }
 
 rulemc ()  {
@@ -20,6 +25,9 @@ rulemc ()  {
           echo "Usage: rulem MESSAGE [RULE_CHARACTER]"
               return 1
       fi
+      local cols=${COLUMNS:-$(tput cols 2>/dev/null || echo 80)}
+      printf -v _hr "%*s" "${cols}" ''
       # Fill line with ruler character ($2, default "-"), reset cursor, move 2 cols right, print message
-      printf -v _hr "%*s" $(tput cols) && print -n ${_hr// /${2--}} && printf "\r\033[2C${fg[yellow]}${1}${reset_color}\n"
+      print -n "${_hr// /${2--}}"
+      printf "\r\033[2C${fg[yellow]}${1}${reset_color}\n"
 }

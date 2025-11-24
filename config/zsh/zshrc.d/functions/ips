@@ -1,13 +1,22 @@
 function ips () {
-	# List IP addresses for each active interface
-	local interface
-	local interfaces=($(networksetup -listallhardwareports | awk '/^Device/{print $NF}'))
+	# List IPv4 addresses for each active interface (macOS + Linux)
+	if [[ "${OSTYPE}" == darwin* ]]; then
+		local interface ip
+		local interfaces=($(networksetup -listallhardwareports | awk '/^Device/{print $NF}'))
+		for interface in $interfaces; do
+			ip=$(ipconfig getifaddr "$interface" 2>/dev/null)
+			[[ -n "$ip" ]] && printf "%11s: %s\n" "$interface" "$ip"
+		done
+		return 0
+	fi
 
-	for interface in $interfaces
-	do
-		local ip=$(ipconfig getifaddr $interface)
-		[ -n "$ip" ] && printf "%11s: %s\n" "$interface" "$ip"
-	done
+	if command -v ip >/dev/null 2>&1; then
+		ip -o -4 addr show scope global up 2>/dev/null | awk '{print $2": "$4}' | while IFS=: read -r iface addr; do
+			printf "%11s: %s\n" "$iface" "${addr%%/*}"
+		done
+		return 0
+	fi
 
-	return 0 # needed so that failure of last getifaddr doesn't fail entire function
+	echo "ips: no supported method found (needs ip on Linux or networksetup/ipconfig on macOS)" >&2
+	return 1
 }
