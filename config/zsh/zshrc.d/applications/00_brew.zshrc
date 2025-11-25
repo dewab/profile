@@ -26,7 +26,12 @@ unset BREW_LOCATION
 if (( $+commands[brew] )); then
   local _brew_prefix="${HOMEBREW_PREFIX:-$(brew --prefix)}"
   append_path FPATH "${_brew_prefix}/share/zsh/site-functions"
+  append_path FPATH "${_brew_prefix}/completions/zsh"
   unset _brew_prefix
+
+  typeset -g -A _comps
+  autoload -Uz _brew
+  _comps[brew]=_brew
 fi
 
 function brew-up () {
