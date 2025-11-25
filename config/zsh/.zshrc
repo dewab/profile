@@ -97,7 +97,7 @@ zmodload zsh/datetime
 # Original daily rebuild logic:
 # function check_and_rebuild_compdb() {
 #     local db_timestamp db_day FLAGS current_day
-# 
+#
 #     case $platform in
 #         darwin)
 #             FLAGS="-f %Dm"
@@ -106,11 +106,11 @@ zmodload zsh/datetime
 #             FLAGS="-c %Y"
 #             ;;
 #     esac
-# 
+#
 #     db_timestamp=$(command stat "${FLAGS}" "${ZSH_COMPDUMP}")
 #     db_day=$(strftime "%j" "${db_timestamp}")
 #     current_day=$(strftime "%j" "${EPOCHSECONDS}")
-# 
+#
 #     # if [ "$(strftime "%j" "${EPOCHSECONDS}")" != "$(strftime "%j" "${db_timestamp}")" ]; then
 #     if [ "${current_day}" != "${db_day}" ]; then
 #         compinit -d "${ZSH_COMPDUMP}" && touch "${ZSH_COMPDUMP}"
