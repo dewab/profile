@@ -1,14 +1,39 @@
-.netrwhist
+# OS cruft
 *.DS_Store
 *.LSOverride
 Thumbs.db
+
+# Editors
+.netrwhist
 *.swp
-_aria2/dht.dat
-*.log
 .vscode
+
+# Logs and caches
+*.log
+**/__pycache__
+**/*.zwc
+zcompdump-*
+zcompcache/
+.zcompcache/
+.cache/
+tmp/
+.tmp/
+_aria2/dht.dat
+**/iterm_integration.sh-*
+
+# Env/secrets
+.env
+.env.*
+.envrc
+.direnv/
+
+# Zsh generated files
 .zcompdump
 zcompdump
 .zsh_history
 .zsh_sessions
-**/iterm_integration.sh-*
-**/__pycache__
+
+# Tooling/ide
+.idea/
+.venv/
+node_modules/

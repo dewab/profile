@@ -1,0 +1,59 @@
+#! /bin/zsh
+#
+# command_completion <target> -- <generator command...>
+# - Regenerates the completion file when missing or older than COMMAND_COMPLETION_MAX_AGE_DAYS (default: 1).
+# - Compiles to <target>.zwc when present and size meets COMMAND_COMPLETION_COMPILE_THRESHOLD_BYTES (default: 10240).
+
+command_completion() {
+  local target="$1"; shift
+
+  # Remaining args are the generator command
+  (( $# )) || return 1
+  local -a _gen_cmd
+  _gen_cmd=("$@")
+
+  integer today mtime_day=0 size=0 size_known=0 regenerate=0 max_age_days compile_threshold
+  (( today = EPOCHSECONDS / 86400 ))
+  (( max_age_days = ${COMMAND_COMPLETION_MAX_AGE_DAYS:-1} ))
+  (( compile_threshold = ${COMMAND_COMPLETION_COMPILE_THRESHOLD_BYTES:-10240} ))
+
+  if (( ${COMMAND_COMPLETION_FORCE_REBUILD:-0} )); then
+    regenerate=1
+  elif [[ ! -s "${target}" ]]; then
+    regenerate=1
+  else
+    local -A _st
+    zstat -L -A _st -- "${target}" 2>/dev/null || _st=()
+    (( _st[mtime] )) && (( mtime_day = _st[mtime] / 86400 ))
+    if (( _st[size] )); then
+      (( size = _st[size] ))
+      size_known=1
+    fi
+    (( today - mtime_day >= max_age_days )) && regenerate=1
+  fi
+
+  if (( regenerate )); then
+    size_known=0  # file will be rewritten; recalc below
+    builtin command "${_gen_cmd[@]}" >| "${target}" || return $?
+  fi
+
+  if (( !size_known )); then
+    local -A _st2
+    zstat -L -A _st2 -- "${target}" 2>/dev/null || _st2=()
+    (( _st2[size] )) && (( size = _st2[size] ))
+  fi
+
+  integer do_compile=0
+  if (( compile_threshold <= 0 )); then
+    do_compile=1
+  elif (( size >= compile_threshold )); then
+    do_compile=1
+  elif (( size == 0 )) && [[ -s "${target}" ]]; then
+    # size unknown (zstat failed) but file exists; err on the side of compiling
+    do_compile=1
+  fi
+
+  if (( do_compile )) && [[ ! -e "${target}.zwc" || "${target}" -nt "${target}.zwc" ]]; then
+    builtin zcompile -R -- "${target}.zwc" "${target}" 2>/dev/null
+  fi
+}

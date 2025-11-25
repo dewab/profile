@@ -1,11 +1,6 @@
 is-executable gitleaks || return
 
-if [[ -f "${ZSH_CACHE_DIR}/completions/_gitleaks" ]]; then
-    source "${ZSH_CACHE_DIR}/completions/_gitleaks"
-fi
-
-autoload -Uz _gitleaks
-typeset -g -A _comps
+autoload -Uz _gitleaks command_completion
+(( ${+_comps} )) || typeset -g -A _comps
 _comps[gitleaks]=_gitleaks
-
-command gitleaks completion zsh >| "${ZSH_CACHE_DIR}/completions/_gitleaks" &|
+command_completion "${ZSH_CACHE_DIR}/completions/_gitleaks" gitleaks completion zsh &|

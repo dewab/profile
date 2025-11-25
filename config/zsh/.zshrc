@@ -90,8 +90,9 @@ autoload -Uz is-at-least
 # autoload -U compinit # && compinit
 autoload -Uz compinit # && compinit -C -d "${XDG_CACHE_HOME}/zsh/zcompdump-${ZSH_VERSION}"
 
-# Enable strftime
+# Enable strftime for date formatting and stat for file status
 zmodload zsh/datetime
+zmodload zsh/stat
 
 # Function to check and rebuild completion database if necessary
 # Original daily rebuild logic:
@@ -124,10 +125,22 @@ check_and_rebuild_compdb() {
     typeset -g __compinit_ran
     [[ -n "${__compinit_ran}" ]] && return 0
 
-    if [[ ! -s "${ZSH_COMPDUMP}" ]]; then
-        compinit -d "${ZSH_COMPDUMP}"
+    # Skip entirely in non-interactive shells
+    [[ -o interactive ]] || { __compinit_ran=1; return 0 }
+
+    # Only rebuild once per day using a simple day stamp
+    local stamp="${ZSH_CACHE_DIR}/.compinit-day"
+    local today=$(( EPOCHSECONDS / 86400 ))
+    local lastday=0
+    [[ -r "${stamp}" ]] && read -r lastday < "${stamp}"
+
+    if [[ ! -s "${ZSH_COMPDUMP}" || "${today}" -ne "${lastday}" ]]; then
+        compinit -i -d "${ZSH_COMPDUMP}" && touch "${ZSH_COMPDUMP}"
+        { command zcompile -R -- "${ZSH_COMPDUMP}.zwc" "${ZSH_COMPDUMP}" } 2>/dev/null
+        printf '%s\n' "${today}" >| "${stamp}"
     else
-        compinit -C -d "${ZSH_COMPDUMP}"
+        # Fast path: reuse cached dump but still run compinit so compdef exists
+        compinit -C -i -d "${ZSH_COMPDUMP}"
     fi
 
     __compinit_ran=1
@@ -237,9 +250,6 @@ for application in ${ZDOTDIR}/zshrc.d/applications/*.zshrc ; do
 	source "${application}"
 done
 unset application
-
-check_and_rebuild_compdb
-# compinit is already run in check_and_rebuild_compdb
 
 # Set the EDITOR variable
 is-executable vim && export EDITOR=$(command -v vim)
